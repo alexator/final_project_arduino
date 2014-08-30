@@ -1,0 +1,30 @@
+#######################################
+# Syntax Coloring Map e-Health
+#######################################
+
+#######################################
+# Datatypes (KEYWORD3)
+#######################################
+
+hexagon	KEYWORD3
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+initWireless		KEYWORD2
+dataAvailable		KEYWORD2
+initWifi		KEYWORD2
+dataAvailable		KEYWORD2
+xmlMessage		KEYWORD2
+jsonMessage		KEYWORD2
+send			KEYWORD2
+startCommunication	KEYWORD2
+returnCommand		KEYWORD2
+returnOperation		KEYWORD2
+returnParams		KEYWORD2
+readData		KEYWORD2
+setSensorRate		KEYWORD2
+getSensorRate		KEYWORD2
+batteryLevel		KEYWORD2
+availableSensors	KEYWORD2
