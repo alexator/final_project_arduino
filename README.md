@@ -1,0 +1,2 @@
+#Hexagon for Arduino
+This is a framework for Arduino Platform that provides the requested functionality for using eHealth's v2.0 biosensors in Android applications. This framework is a part of a bigger project.
