@@ -49,46 +49,39 @@ void hexagonClass::initBluetooth(char access_point_name[], unsigned long p) {
  * [hexagonClass::initWifi description]
  * @param access_point_name [description]
  */
-void hexagonClass::initWifi(char access_point_name[]) {
+void hexagonClass::initWifi(char access_point_name[], char passPhrase[]) {
 	
-	char name[30];
-	
-	strcpy(name, "join ");
+	char name[60];
+	char pass[128];
+
+	strcpy(name, "join ");		// 17 chars available for name after this
 	strcat(name, access_point_name);
 	strcat(name, "\r");
-
-	Serial.begin(9600);
-	Serial.flush();
+	strcpy(pass, "set wlan phrase ");		// 17 chars available for name after this
+	strcat(pass, passPhrase);
+	strcat(pass, "\r");
 	
-	delay(5);
+	Serial.begin(9600);	// Start the serial channel for debuging
+	Serial.flush();		
 	
-	Serial.print("$$$"); 
-	hexagon.check();
-  	
-  	// Sets DHCP and TCP protocol
-    Serial.print("set ip dhcp 1\r");
-    hexagon.check();
-    Serial.print("set ip protocol 1\r");
-    hexagon.check();
-  	
-  	// Configures the way to join the network AP
-    Serial.print("set wlan join 0\r");
-    hexagon.check();
-    Serial.print(name);
-    hexagon.check();
+	Serial.print("$$$"); check();  
+  // Sets DHCP and TCP protocol
+    Serial.print("set ip dhcp 0\r"); check();
+    Serial.print("set ip address 192.168.2.64\r"); check();
+    Serial.print("set ip protocol 1\r"); check();
+    Serial.print(pass); check();
+	Serial.print("set ip local 3456\r"); check();
+  // Configures the way to join the network AP
+    Serial.print("set wlan join 0\r"); check();
+    Serial.print(name); check();
   
-    Serial.print("set i h 255.255.255.255\r");
-    delay(1000);
-    
-    Serial.print("set i r 12345\r");
-    hexagon.check();
-    Serial.print("set i l 2000\r");
-    hexagon.check();
-    Serial.print("exit\r");
-    hexagon.check();
-	
-	Serial.flush();
+    Serial.print("exit\r"); check();
+
+    Serial.flush();
+	delay(10);
 }
+
+
 
 /**
  * [hexagonClass::check description]
@@ -133,11 +126,13 @@ int hexagonClass::dataAvailable() { //maybe I should change this to boolean??
  * @param  value  [description]
  * @return        [description]
  */
-String hexagonClass::xmlMessageAnalog(String type, String sensor, float value) {
+String hexagonClass::xmlMessageAnalog(int messagetype, int type, float value) {
 
 	char s[10];
 	dtostrf(value, 2, 3, s);
 	String val = String(s);
+	String mesType = String(messagetype);
+	String mType = String(type);
 	String mssg;
 	
 	mssg = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -146,13 +141,13 @@ String hexagonClass::xmlMessageAnalog(String type, String sensor, float value) {
 	delay(1);
 	mssg.concat("<message_type>");
 	delay(1);
-	mssg.concat(type);
+	mssg.concat(mesType);
 	delay(1);
 	mssg.concat("</message_type>");
 	delay(1);
 	mssg.concat("<type>");
 	delay(1);
-	mssg.concat(sensor);
+	mssg.concat(mType);
 	delay(1);
 	mssg.concat("</type>");
 	delay(1);
@@ -169,9 +164,11 @@ String hexagonClass::xmlMessageAnalog(String type, String sensor, float value) {
 
 }
 
-String hexagonClass::xmlMessageDigital(String type, String sensor, unsigned long value) {
+String hexagonClass::xmlMessageDigital(int messagetype, int type, unsigned long value) {
 
 	String val = String(value);
+	String mesType = String(messagetype);
+	String mType = String(type);
 	String mssg;
 	
 	mssg = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -180,13 +177,13 @@ String hexagonClass::xmlMessageDigital(String type, String sensor, unsigned long
 	delay(1);
 	mssg.concat("<message_type>");
 	delay(1);
-	mssg.concat(type);
+	mssg.concat(mesType);
 	delay(1);
 	mssg.concat("</message_type>");
 	delay(1);
 	mssg.concat("<type>");
 	delay(1);
-	mssg.concat(sensor);
+	mssg.concat(mType);
 	delay(1);
 	mssg.concat("</type>");
 	delay(1);
@@ -210,9 +207,11 @@ String hexagonClass::xmlMessageDigital(String type, String sensor, unsigned long
  * @param  value  [description]
  * @return        [description]
  */
-String hexagonClass::jsonMessageDigital(String type, String sensor, unsigned long value) {
+String hexagonClass::jsonMessageDigital(int messagetype, int type, unsigned long value) {
 
 	String val = String(value);
+	String mesType = String(messagetype);
+	String mType = String(type);
 	String mssg;
 	
 	mssg = "{\"data\":[";
@@ -221,13 +220,13 @@ String hexagonClass::jsonMessageDigital(String type, String sensor, unsigned lon
 	delay(1);
 	mssg.concat("\"message_type\":\"");
 	delay(1);
-	mssg.concat(type);
+	mssg.concat(mesType);
 	delay(1);
 	mssg.concat("\",");
 	delay(1);
 	mssg.concat("\"type\":\"");
 	delay(1);
-	mssg.concat(sensor);
+	mssg.concat(mType);
 	delay(1);
 	mssg.concat("\",");
 	delay(1);
@@ -245,11 +244,13 @@ String hexagonClass::jsonMessageDigital(String type, String sensor, unsigned lon
 	return mssg;
 }
 
-String hexagonClass::jsonMessageAnalog(String type, String sensor, float value) {
+String hexagonClass::jsonMessageAnalog(int messagetype, int type, float value) {
 
 	char s[10];
 	dtostrf(value, 2, 3, s);
 	String val = String(s);
+	String mesType = String(messagetype);
+	String mType = String(type);
 	String mssg;
 	
 	mssg = "{\"data\":[";
@@ -258,13 +259,13 @@ String hexagonClass::jsonMessageAnalog(String type, String sensor, float value) 
 	delay(1);
 	mssg.concat("\"message_type\":\"");
 	delay(1);
-	mssg.concat(type);
+	mssg.concat(mesType);
 	delay(1);
 	mssg.concat("\",");
 	delay(1);
 	mssg.concat("\"type\":\"");
 	delay(1);
-	mssg.concat(sensor);
+	mssg.concat(mType);
 	delay(1);
 	mssg.concat("\",");
 	delay(1);
@@ -420,6 +421,10 @@ long hexagonClass::readVcc() {
 	result |= ADCH<<8;
 	result = 1125300L / result; // Back-calculate AVcc in mV
 	return result;
+}
+
+double hexagonClass::accuFix()	{
+	return ((readVcc()/1000.0)/5.0);
 }
 
 long hexagonClass::batteryLevel() {

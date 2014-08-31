@@ -40,6 +40,8 @@ class hexagonClass {
 		// Responses
 		static const int CONNECTED = 0;
 		static const int DISCONNECTING = 1;
+		static const int SENSORDATA = 0;
+		static const int STATUSDATA = 1;
 
 		//	Containers
 		static const int XMLCONTAINER = 0;
@@ -55,7 +57,7 @@ class hexagonClass {
 		 */
 		
 		void initBluetooth(char access_point_name[], unsigned long p);
-		void initWifi(char access_point_name[]);
+		void initWifi(char access_point_name[], char passPhrase[]);
 		void check();
 		/**
 		 * [hexagonClass::dataAvailable Available data on the wireless link]
@@ -64,10 +66,10 @@ class hexagonClass {
 		
 		int dataAvailable();
 
-		String xmlMessageAnalog(String type, String sensor, float value);
-		String xmlMessageDigital(String type, String sensor, unsigned long value);
-		String jsonMessageAnalog(String type, String sensor, float value);
-		String jsonMessageDigital(String type, String sensor, unsigned long value);
+		String xmlMessageAnalog(int messagetype, int type, float value);
+		String xmlMessageDigital(int messagetype, int type, unsigned long value);
+		String jsonMessageAnalog(int messagetype, int type, float value);
+		String jsonMessageDigital(int messagetype, int type, unsigned long value);
 
 		void send(String msg);
 
@@ -77,6 +79,7 @@ class hexagonClass {
 		int returnContainer(String data);
 		long readVcc();
 		long batteryLevel();
+		double accuFix();
 		unsigned long availableSensors();
 		int checkSensor(int i);
 		char* splitter(String message, int token);
